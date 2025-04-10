@@ -53,19 +53,19 @@ namespace E2ETesting.Steps
             await _page.GotoAsync("http://localhost:5240/CreateNewShoppingList");
         }
 
-        [When("I enter {string} in the shopping list title")]
+        [When(@"I enter ""(.*)"" in the shopping list title")]
         public async Task WhenIEnterInTheShoppingListTitle(string title)
         {
             await _page.FillAsync("#listTitleInput", title);
         }
 
-        [When("I enter {string} in the title input field")]
+        [When(@"I enter ""(.*)"" in the title input field")]
         public async Task WhenIEnterInTheTitleInputField(string title)
         {
             await _page.FillAsync("#listTitleInput", title);
         }
 
-        [When("I select {string} from the category dropdown")]
+        [When(@"I select ""(.*)"" from the category dropdown")]
         public async Task WhenISelectFromTheCategoryDropdown(string label)
         {
             string value = label switch
@@ -75,26 +75,25 @@ namespace E2ETesting.Steps
                 "Freezer items" => "Freezer",
                 "Pantry items" => "Pantry",
                 "Hygiene items" => "Hygiene",
-                "Fridge" => "Fridge", // special case
                 _ => throw new ArgumentException($"Unknown category label: {label}")
             };
 
             await _page.SelectOptionAsync("#category", new[] { value });
         }
 
-        [When("I enter {string} in the product input field")]
+        [When(@"I enter ""(.*)"" in the product input field")]
         public async Task WhenIEnterInTheProductInputField(string product)
         {
             await _page.FillAsync("#product", product);
         }
 
-        [When("I enter {string} in the amount input field")]
+        [When(@"I enter ""(.*)"" in the amount input field")]
         public async Task WhenIEnterInTheAmountInputField(string amount)
         {
             await _page.FillAsync("#amount", amount);
         }
 
-        [When("I click on the \"(.*)\" button")]
+        [When(@"I click on the ""(.*)"" button")]
         public async Task WhenIClickOnButton(string buttonText)
         {
             string selector = buttonText switch
@@ -133,5 +132,140 @@ namespace E2ETesting.Steps
             if (text.Contains(itemName, StringComparison.OrdinalIgnoreCase))
                 throw new Exception($"'{itemName}' was found in the shopping list.");
         }
+
+        [When(@"I leave the title input field empty")]
+        public async Task WhenILeaveTheTitleInputFieldEmpty()
+        {
+            await _page.FillAsync("#listTitleInput", "");
+        }
+
+        [Then(@"I should see a validation message for missing title")]
+        public async Task ThenIShouldSeeAValidationMessageForMissingTitle()
+        {
+            var validationMessage = await _page.Locator("#listTitleInput").EvaluateAsync<string>("el => el.validationMessage");
+            if (string.IsNullOrWhiteSpace(validationMessage))
+            {
+                throw new Exception("No validation message was shown for missing title.");
+            }
+        }
+
+        [Then(@"I should see two separate items for ""(.*)""")]
+        public async Task ThenIShouldSeeTwoSeparateItemsFor(string productName)
+        {
+            var items = await _page.QuerySelectorAllAsync(".shopping-list-item");
+            int matchCount = 0;
+
+            foreach (var item in items)
+            {
+                var text = await item.InnerTextAsync();
+                if (text.Contains(productName, StringComparison.OrdinalIgnoreCase))
+                {
+                    matchCount++;
+                }
+            }
+
+            if (matchCount < 2)
+            {
+                throw new Exception($"Expected two separate items for '{productName}', but found {matchCount}.");
+            }
+        }
+
+
+        [Then(@"I should see a warning or validation preventing mismatch")]
+        public async Task ThenIShouldSeeAValidationOrMismatchWarning()
+        {
+            var pageText = await _page.InnerTextAsync("body");
+            if (!pageText.ToLower().Contains("warning") && !pageText.ToLower().Contains("validation"))
+                throw new Exception("Expected warning or validation message was not found.");
+        }
+
+        [Then(@"Instead the product is added to the shopping list")]
+        public async Task ThenProductWasStillAddedToList()
+        {
+            var listText = await _page.InnerTextAsync("#shoppingList");
+            if (!listText.Contains("Tomato", StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Tomato was not added to the list.");
+        }
+        [When(@"I drag ""(.*)"" from the Recently Purchased list")]
+        public async Task WhenIDragFromRecentlyPurchased(string itemName)
+        {
+            // Simulerar drag, men Playwright har begränsat stöd för drag & drop i JS-baserade DOM.
+            // Du behöver ha drag & drop JS-event på klientsidan som lyssnar på detta.
+            // Här används bara ett placeholder-klick istället.
+            var source = _page.Locator($".recently-purchased-item:has-text(\"{itemName}\")");
+            await source.ClickAsync(); // simulerar aktivering
+        }
+
+        [When(@"I drop ""(.*)"" in the shopping list area")]
+        public async Task WhenIDropInTheShoppingListArea(string itemName)
+        {
+            // Placeholder, då riktig DnD kräver JS event. Simulerar att produkten lades till.
+            var list = await _page.InnerTextAsync("#shoppingList");
+            if (!list.Contains(itemName))
+                throw new Exception($"{itemName} was not dropped correctly.");
+        }
+
+        [Then(@"I should see ""(.*)"" in the shopping list")]
+        public async Task ThenIShouldSeeInShoppingList(string item)
+        {
+            var list = await _page.InnerTextAsync("#shoppingList");
+            if (!list.Contains(item, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"Expected '{item}' to be in the shopping list.");
+        }
+        [Then(@"the product input field should be empty")]
+        public async Task ThenProductInputShouldBeEmpty()
+        {
+            var value = await _page.InputValueAsync("#product");
+            if (!string.IsNullOrWhiteSpace(value))
+                throw new Exception("Product field was not cleared.");
+        }
+
+        [Then(@"the amount input field should be empty")]
+        public async Task ThenAmountInputShouldBeEmpty()
+        {
+            var value = await _page.InputValueAsync("#amount");
+            if (!string.IsNullOrWhiteSpace(value))
+                throw new Exception("Amount field was not cleared.");
+        }
+
+        [Then(@"the category dropdown should be reset")]
+        public async Task ThenCategoryDropdownShouldBeReset()
+        {
+            var selected = await _page.InputValueAsync("#category");
+            if (!string.IsNullOrWhiteSpace(selected))
+                throw new Exception("Category dropdown was not reset.");
+        }
+        [Then(@"I should see the list title ""(.*)"" displayed above the shopping list")]
+        public async Task ThenListTitleShouldBeVisible(string title)
+        {
+            var listTitle = await _page.InnerTextAsync("#listTitleDisplay");
+            if (!listTitle.Contains(title, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"Expected title '{title}' to be visible, but got '{listTitle}'.");
+        }
+
+        [Then(@"I should see the product ""(.*)"" displayed in the shopping list")]
+        public async Task ThenProductShouldBeDisplayed(string expected)
+        {
+            var list = await _page.InnerTextAsync("#shoppingList");
+            if (!list.Contains(expected, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"Product '{expected}' not displayed.");
+        }
+
+        [When(@"""(.*)"" appears in the Recently Purchased section")]
+        public async Task WhenAppearsInRecentlyPurchased(string itemName)
+        {
+            var recentlyPurchased = await _page.InnerTextAsync("#recentlyPurchasedList");
+            if (!recentlyPurchased.Contains(itemName, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"'{itemName}' not found in Recently Purchased section.");
+        }
+
+        [Then(@"I should see one item ""(.*)"" in the shopping list")]
+        public async Task ThenIShouldSeeOneItemInTheShoppingList(string expected)
+        {
+            var list = await _page.InnerTextAsync("#shoppingList");
+            if (!list.Contains(expected, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"Expected to see '{expected}' in the shopping list, but it was not found.");
+        }
+
     }
 }

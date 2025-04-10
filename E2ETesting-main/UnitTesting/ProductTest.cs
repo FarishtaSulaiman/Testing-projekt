@@ -6,7 +6,7 @@ namespace E2ETesting.UnitTesting;
 public class ProductTest
 {
     [Fact]
-    public void CanCreateProduct_WithValidProperties()
+    public void CanCreateProductWithValidProperties()
     {
         // Arrange
         var product = new Product
@@ -27,7 +27,7 @@ public class ProductTest
     }
 
     [Fact]
-    public void Product_Default_ShoppingList_ShouldBeNull()
+    public void ProductDefaultShoppingListShouldBeNull()
     {
         // Arrange
         var product = new Product();
