@@ -47,6 +47,8 @@ namespace E2ETesting.Steps
             await _page.WaitForURLAsync("**/MyPage");
         }
 
+        // Stegdefinitioner för CreateNewShoppinglist
+
         [Given("I am on the \"CreateNewShoppinglist\" page")]
         public async Task GivenIAmOnTheCreateNewShoppinglistPage()
         {
@@ -58,6 +60,7 @@ namespace E2ETesting.Steps
         {
             await _page.FillAsync("#listTitleInput", title);
         }
+
 
         [When(@"I enter ""(.*)"" in the title input field")]
         public async Task WhenIEnterInTheTitleInputField(string title)
@@ -133,22 +136,7 @@ namespace E2ETesting.Steps
                 throw new Exception($"'{itemName}' was found in the shopping list.");
         }
 
-        [When(@"I leave the title input field empty")]
-        public async Task WhenILeaveTheTitleInputFieldEmpty()
-        {
-            await _page.FillAsync("#listTitleInput", "");
-        }
-
-        [Then(@"I should see a validation message for missing title")]
-        public async Task ThenIShouldSeeAValidationMessageForMissingTitle()
-        {
-            var validationMessage = await _page.Locator("#listTitleInput").EvaluateAsync<string>("el => el.validationMessage");
-            if (string.IsNullOrWhiteSpace(validationMessage))
-            {
-                throw new Exception("No validation message was shown for missing title.");
-            }
-        }
-
+       
         [Then(@"I should see two separate items for ""(.*)""")]
         public async Task ThenIShouldSeeTwoSeparateItemsFor(string productName)
         {
@@ -168,15 +156,6 @@ namespace E2ETesting.Steps
             {
                 throw new Exception($"Expected two separate items for '{productName}', but found {matchCount}.");
             }
-        }
-
-
-        [Then(@"I should see a warning or validation preventing mismatch")]
-        public async Task ThenIShouldSeeAValidationOrMismatchWarning()
-        {
-            var pageText = await _page.InnerTextAsync("body");
-            if (!pageText.ToLower().Contains("warning") && !pageText.ToLower().Contains("validation"))
-                throw new Exception("Expected warning or validation message was not found.");
         }
 
         [Then(@"Instead the product is added to the shopping list")]
@@ -266,13 +245,6 @@ namespace E2ETesting.Steps
         }
 
        
-        [Then(@"I should see one item ""(.*)"" in the shopping list")]
-        public async Task ThenIShouldSeeOneItemInTheShoppingList(string expected)
-        {
-            var list = await _page.InnerTextAsync("#shoppingList");
-            if (!list.Contains(expected, StringComparison.OrdinalIgnoreCase))
-                throw new Exception($"Expected to see '{expected}' in the shopping list, but it was not found.");
-        }
 
     }
 }

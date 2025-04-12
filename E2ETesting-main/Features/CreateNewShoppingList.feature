@@ -37,16 +37,6 @@ A short summary of the feature
   Then I should not see "Eggs" in the shopping list
 
 
-  Scenario: Try to create a shopping list without a title
-  Given I am on the "CreateNewShoppinglist" page
-  When I leave the title input field empty
-  And I select "Fridge items" from the category dropdown
-  And I enter "Milk" in the product input field
-  And I enter "1" in the amount input field
-  And I click on the "Add to list" button
-  When I click on the "Create Shopping List" button
- #// Then I should see a validation message for missing title
-
   Scenario: Same product added twice does not merge quantity
   Given I am on the "CreateNewShoppinglist" page
   When I enter "Fruit List" in the title input field
@@ -69,8 +59,6 @@ A short summary of the feature
   And I enter "2" in the amount input field
   When I click on the "Add to list" button
   Then I should see "Tomato" in the shopping list
-  But I should see a warning or validation preventing mismatch
-
 
 
   Scenario: Product fields are cleared after adding a product

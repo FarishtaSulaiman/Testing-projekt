@@ -203,7 +203,7 @@
     document.getElementById("createListForm").addEventListener("submit", function () {
         setTimeout(() => {
             document.querySelectorAll("#createListForm input, #createListForm select").forEach(input => {
-                if (input.type !== "hidden") { // Don't clear hidden fields like List ID
+                if (input.type !== "hidden") { 
                     input.value = "";
                 }
             });
