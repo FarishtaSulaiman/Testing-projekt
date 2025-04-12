@@ -186,32 +186,46 @@ namespace E2ETesting.Steps
             if (!listText.Contains("Tomato", StringComparison.OrdinalIgnoreCase))
                 throw new Exception("Tomato was not added to the list.");
         }
+
+        [When(@"""(.*)"" appears in the Recently Purchased section")]
+        public async Task WhenAppearsInRecentlyPurchased(string itemName)
+        {
+            var list = await _page.InnerTextAsync("#recentlyPurchasedList");
+            if (!list.Contains(itemName, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"{itemName} was not found in Recently Purchased section.");
+        }
         [When(@"I drag ""(.*)"" from the Recently Purchased list")]
         public async Task WhenIDragFromRecentlyPurchased(string itemName)
         {
-            // Simulerar drag, men Playwright har begränsat stöd för drag & drop i JS-baserade DOM.
-            // Du behöver ha drag & drop JS-event på klientsidan som lyssnar på detta.
-            // Här används bara ett placeholder-klick istället.
-            var source = _page.Locator($".recently-purchased-item:has-text(\"{itemName}\")");
-            await source.ClickAsync(); // simulerar aktivering
+            // Hitta elementet i Recently Purchased
+            var source = _page.Locator($".recently-purchased-item:has-text(\"{itemName}\")").First;
+
+            // Hitta droppytan (shoppinglistan)
+            var target = _page.Locator("#shoppingList");
+
+            // Använd riktig Playwright drag-and-drop
+            await source.DragToAsync(target);
         }
 
         [When(@"I drop ""(.*)"" in the shopping list area")]
         public async Task WhenIDropInTheShoppingListArea(string itemName)
         {
-            // Placeholder, då riktig DnD kräver JS event. Simulerar att produkten lades till.
+            // Verifiera att item lagts till i listan
             var list = await _page.InnerTextAsync("#shoppingList");
-            if (!list.Contains(itemName))
+            if (!list.Contains(itemName, StringComparison.OrdinalIgnoreCase))
                 throw new Exception($"{itemName} was not dropped correctly.");
         }
 
+
         [Then(@"I should see ""(.*)"" in the shopping list")]
-        public async Task ThenIShouldSeeInShoppingList(string item)
+        public async Task ThenIShouldSeeItemInShoppingList(string itemName)
         {
             var list = await _page.InnerTextAsync("#shoppingList");
-            if (!list.Contains(item, StringComparison.OrdinalIgnoreCase))
-                throw new Exception($"Expected '{item}' to be in the shopping list.");
+            if (!list.Contains(itemName, StringComparison.OrdinalIgnoreCase))
+                throw new Exception($"Expected '{itemName}' in shopping list, but not found.");
         }
+
+
         [Then(@"the product input field should be empty")]
         public async Task ThenProductInputShouldBeEmpty()
         {
@@ -251,14 +265,7 @@ namespace E2ETesting.Steps
                 throw new Exception($"Product '{expected}' not displayed.");
         }
 
-        [When(@"""(.*)"" appears in the Recently Purchased section")]
-        public async Task WhenAppearsInRecentlyPurchased(string itemName)
-        {
-            var recentlyPurchased = await _page.InnerTextAsync("#recentlyPurchasedList");
-            if (!recentlyPurchased.Contains(itemName, StringComparison.OrdinalIgnoreCase))
-                throw new Exception($"'{itemName}' not found in Recently Purchased section.");
-        }
-
+       
         [Then(@"I should see one item ""(.*)"" in the shopping list")]
         public async Task ThenIShouldSeeOneItemInTheShoppingList(string expected)
         {

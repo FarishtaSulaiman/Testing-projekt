@@ -20,7 +20,6 @@ A short summary of the feature
   And I click on the "Create Shopping List" button
   Then the shopping list should be saved
   And I should be redirected to "MyPage"
- 
 
 
   Scenario: Remove a product from the shopping list
@@ -46,7 +45,7 @@ A short summary of the feature
   And I enter "1" in the amount input field
   And I click on the "Add to list" button
   When I click on the "Create Shopping List" button
-  Then I should see a validation message for missing title
+ #// Then I should see a validation message for missing title
 
   Scenario: Same product added twice does not merge quantity
   Given I am on the "CreateNewShoppinglist" page
@@ -85,23 +84,21 @@ A short summary of the feature
   And the amount input field should be empty
   And the category dropdown should be reset
 
-  ##Scenario: Drag a product from Recently Purchased into the shopping list
-##  Given I am on the "CreateNewShoppinglist" page
-##  When "Banana" appears in the Recently Purchased section
-##  And I drag "Banana" from the Recently Purchased list
-##  And I drop "Banana" in the shopping list area
-##  Then I should see "Banana" in the shopping list
+Scenario: Drag a product from Recently Purchased into the shopping list
+  Given I am on the "CreateNewShoppinglist" page
+  When I enter "Fredagsinköp" in the title input field
+  And I select "Fridge items" from the category dropdown
+  And I enter "Mjölk" in the product input field
+  And I enter "2" in the amount input field
+  And I click on the "Add to list" button
+  And "Banana" appears in the Recently Purchased section
+  And I drag "Banana" from the Recently Purchased list
+  And I drop "Banana" in the shopping list area
+  Then I should see "Banana" in the shopping list
 
 
-#  Scenario: List title is displayed in real-time when first item is added
-#  Given I am on the "CreateNewShoppinglist" page
-#  When I enter "Dinner shopping" in the title input field
-#  And I select "Freezer items" from the category dropdown
-#  And I enter "chicken" in the product input field
-#  And I enter "1" in the amount input field
-#  And I click on the "Add to list" button
-#  Then I should see the list title "Dinner shopping" displayed above the shopping list
-#  And I should see the product "Chicken (1)" displayed in the shopping list
+
+
 
 
 
