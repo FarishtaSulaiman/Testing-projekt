@@ -44,7 +44,7 @@ namespace E2ETesting.Steps
             // Klicka på Logga in-knappen
             await _page.ClickAsync("#login-submit");
 
-            // Vänta på redirect till MyPage (eller annan bekräftelse)
+            // Vänta på redirect till MyPage
             await _page.WaitForURLAsync("**/MyPage");
         }
 
@@ -57,7 +57,7 @@ namespace E2ETesting.Steps
         [When(@"I navigate to ""MyPage""")]
         public async Task WhenINavigateToMyPage()
         {
-            // Navigerar igen, om separat från Given
+         
             await _page.GotoAsync("http://localhost:5240/MyPage");
         }
 
@@ -66,14 +66,14 @@ namespace E2ETesting.Steps
         [When(@"I click the ""Create new shopping list"" button")]
         public async Task WhenIClickTheCreateNewShoppingListButton()
         {
-            // Knappen har klass: btnNewShoppingList
+            
             await _page.ClickAsync(".btnNewShoppingList");
         }
 
         [Then(@"I should be redirected to the ""CreateNewShoppingList"" page")]
         public async Task ThenIShouldBeRedirectedToTheCreateNewShoppingListPage()
         {
-            // Vänta på navigering
+         
             await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
             var currentUrl = _page.Url;
@@ -87,7 +87,6 @@ namespace E2ETesting.Steps
         [When(@"I have at least one shopping list on MyPage")]
         public async Task WhenIHaveAtLeastOneShoppingListOnMyPage()
         {
-            // Kontrollera att minst ett list-element finns
             var listItems = _page.Locator(".list-group-item");
             _initialListCount = await listItems.CountAsync();
 
@@ -100,12 +99,11 @@ namespace E2ETesting.Steps
         [When(@"I click the delete button for a shopping list")]
         public async Task WhenIClickTheDeleteButtonForAShoppingList()
         {
-            // Hitta första delete-knappen i listan och klicka
+         
             var deleteButton = _page.Locator(".list-group-item button.btn-danger").First;
             await deleteButton.ClickAsync();
 
-            // Bekräfta om det finns dialog – annars skippa
-            // Vänta på eventuell laddning
+         
             await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         }
 
@@ -187,7 +185,7 @@ namespace E2ETesting.Steps
 
                 if (simplified.Contains(expectedProduct))
                 {
-                    return; // ✅ Produkter hittades korrekt
+                    return; 
                 }
             }
 
@@ -217,7 +215,7 @@ namespace E2ETesting.Steps
         [Then(@"I should see the list’s products displayed for editing")]
         public async Task ThenIShouldSeeTheListsProductsDisplayedForEditing()
         {
-            // Väntar tills edit-sektionen är synlig
+           
             await _page.WaitForSelectorAsync(".edit-section");
 
             var productItems = _page.Locator(".edit-section .product-item");
@@ -232,7 +230,6 @@ namespace E2ETesting.Steps
         [Then(@"I should see a heading with text ""(.*)""")]
         public async Task ThenIShouldSeeAHeadingWithText(string expectedText)
         {
-            // Letar rubriker i alla vanliga heading-taggar + p
             var heading = _page.Locator("h1, h2, h3, h4, h5, h6, p");
             var count = await heading.CountAsync();
 

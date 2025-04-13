@@ -47,7 +47,6 @@ namespace E2ETesting.Steps
             await _page.WaitForURLAsync("**/MyPage");
         }
 
-        // Stegdefinitioner för CreateNewShoppinglist
 
         [Given("I am on the \"CreateNewShoppinglist\" page")]
         public async Task GivenIAmOnTheCreateNewShoppinglistPage()
@@ -182,14 +181,14 @@ namespace E2ETesting.Steps
             // Hitta droppytan (shoppinglistan)
             var target = _page.Locator("#shoppingList");
 
-            // Använd riktig Playwright drag-and-drop
+            // Använd Playwright drag-and-drop
             await source.DragToAsync(target);
         }
 
         [When(@"I drop ""(.*)"" in the shopping list area")]
         public async Task WhenIDropInTheShoppingListArea(string itemName)
         {
-            // Verifiera att item lagts till i listan
+           
             var list = await _page.InnerTextAsync("#shoppingList");
             if (!list.Contains(itemName, StringComparison.OrdinalIgnoreCase))
                 throw new Exception($"{itemName} was not dropped correctly.");

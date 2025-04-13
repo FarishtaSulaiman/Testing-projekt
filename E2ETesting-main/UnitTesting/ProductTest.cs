@@ -8,7 +8,7 @@ public class ProductTest
     [Fact]
     public void CanCreateProductWithValidProperties()
     {
-        // Arrange
+       
         var product = new Product
         {
             Id = 1,
@@ -18,7 +18,6 @@ public class ProductTest
             ShoppingListId = 5
         };
 
-        // Act & Assert
         Assert.Equal(1, product.Id);
         Assert.Equal("Mjölk", product.Name);
         Assert.Equal(2, product.Amount);
@@ -29,10 +28,8 @@ public class ProductTest
     [Fact]
     public void ProductDefaultShoppingListShouldBeNull()
     {
-        // Arrange
         var product = new Product();
 
-        // Act & Assert
         Assert.Null(product.ShoppingList);
     }
 }
